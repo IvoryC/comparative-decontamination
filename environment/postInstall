@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -e
+
+# required for SCRuB --not sure if its better to do this here or in SCRuB script.
+Rscript -e 'install_torch()'
