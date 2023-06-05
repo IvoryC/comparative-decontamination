@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+## SCRIPT TO RUN COMPLETE SCRuB ANALYSIS
+# Ivory adapted steps from the SCRuB paper
+
+echo "Start Date/Time: $(date)"
+
+mkdir ../results/
+
+echo -e "\n=========================================================\n"
+echo "Date/Time: $(date)"
+echo -e "before-decontamination.R ... \n"
+Rscript ivory/before-decontamination.R 
+
+
+### Decontamination
+
+echo -e "\n=========================================================\n"
+echo "Date/Time: $(date)"
+echo -e "[1 of 6] decontaminate_not.R ... \n"
+Rscript ivory/decontaminate_not.R
+
+echo -e "\n=========================================================\n"
+echo "Date/Time: $(date)"
+echo -e "[2 of 6] decontaminate_SCRuB.R ... \n"
+Rscript ivory/decontaminate_SCRuB.R 5
+
+echo -e "\n=========================================================\n"
+echo "Date/Time: $(date)"
+echo -e "[3 of 6] decontaminate_noPlate-SCRuB.R with all blanks... \n"
+Rscript ivory/decontaminate_noPlate-SCRuB.R trials=2 dropBlanks=0
+
+echo -e "\n=========================================================\n"
+echo "Date/Time: $(date)"
+echo -e "[4 of 6] decontaminate_noPlate-SCRuB.R with some blanks... \n"
+Rscript ivory/decontaminate_noPlate-SCRuB.R trials=4 dropBlanks=.3
+
+echo -e "\n=========================================================\n"
+echo "Date/Time: $(date)"
+echo -e "[5 of 6] decontaminate_noPlate-SCRuB.R with fewer blanks... \n"
+Rscript ivory/decontaminate_noPlate-SCRuB.R trials=6 dropBlanks=.6
+
+echo -e "\n=========================================================\n"
+echo "Date/Time: $(date)"
+echo -e "[6 of 6] decontaminate_noPlate-SCRuB.R with just one blank... \n"
+Rscript ivory/decontaminate_noPlate-SCRuB.R trials=10 dropBlanks=.99
+
+
+### post-decontamination processing (normalization)
+
+echo -e "\n=========================================================\n"
+echo "Date/Time: $(date)"
+echo -e "[1 of 1] post-decont-vsnm-and-diversity.R ... \n"
+Rscript ivory/post-decont-vsnm-and-diversity.R
+
+
+### prediction
+
+echo -e "\n=========================================================\n"
+echo "Date/Time: $(date)"
+echo -e "[1 of 4] alt-ML.R ... \n"
+Rscript ivory/alt-ML.R categories=Control,SKCM
+
+echo -e "\n=========================================================\n"
+echo "Date/Time: $(date)"
+echo -e "[2 of 4] alt-ML.R ... \n"
+Rscript ivory/alt-ML.R categories=Control,PRAD
+
+echo -e "\n=========================================================\n"
+echo "Date/Time: $(date)"
+echo -e "[3 of 4] alt-ML.R ... \n"
+Rscript ivory/alt-ML.R categories=Control,NSCLC
+
+echo -e "\n=========================================================\n"
+echo "Date/Time: $(date)"
+echo -e "[4 of 4] alt-ML.R  ... \n"
+Rscript ivory/alt-ML.R categories=SKCM,NSCLC
+
+### comparative prediction assessment
+
+echo -e "\n=========================================================\n"
+echo "Date/Time: $(date)"
+echo -e "[1 of 1] summarize_performance.R ... \n"
+Rscript ivory/summarize_performance.R
+
+
+
+echo "End Date/Time: $(date)"
