@@ -149,6 +149,18 @@ for (trialNumber in 1:numTrials){
       write.table(scrub_df, file=file, append=TRUE, quote=F, sep=",")
     })
     
+    #### Also save the p - proportion of each sample that is not contaminant by SCRuB estimation
+    scrubP = data.frame(sample=names(scrub_output$p), p=scrub_output$p)
+    
+    file2 = file.path(resDir, "scrub_estimated-non-contaminant.csv")
+    message("Saving table of scrub's estimation of non-contaminant portion per sample: ", file2)
+    
+    # write methods and additional results to the same file
+    writeLines(commentLines, file2)
+    suppressWarnings({
+      write.table(scrubP, file=file2, append=TRUE, quote=F, sep=",", row.names = F)
+    })
+    
 }
 
 message("Done!")
